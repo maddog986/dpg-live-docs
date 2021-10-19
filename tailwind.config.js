@@ -130,7 +130,7 @@ module.exports = {
             "p + div": {
               marginBottom: '1.25rem',
             },
-            "p + h2, div + h2": {
+            "p + h2, div + h2, div + h3, div + h4": {
               marginTop: '2.5rem',
             }
           }
