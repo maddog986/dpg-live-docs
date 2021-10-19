@@ -1,0 +1,39 @@
+---
+title: FadeIn
+---
+
+# With Fade In
+
+A component to provide a Fade In effect using [IntersectionObserver](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API).
+
+```jsx
+const FadeIn = (Component) => ({ duration = 200, className = "", children }) => {
+    const [isVisible, setVisible] = useState(true)
+
+    const domRef = useRef()
+
+    useEffect(() => {
+        if (!domRef || !domRef.current) return
+
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                setVisible(entry.isIntersecting)
+
+                if (entry.isIntersecting) {
+                    observer.unobserve(domRef.current)
+                }
+            })
+        })
+
+        observer.observe(domRef.current)
+
+        const ref = domRef.current
+
+        return () => observer.unobserve(ref)
+    }, [])
+
+    return <div ref={domRef} className={'transition-opacity duration-' + duration + ' ' + (isVisible ? 'opacity-100' : 'opacity-0') + ' w-full h-full ' + className}>
+        {children}
+    </div>
+}
+```

@@ -1,0 +1,65 @@
+---
+title: WordPress Security
+section: WordPress
+slug: /wordpress/security/
+---
+
+# General WordPress Security
+
+Because WordPress is such a large and open platform, its no wonder its used by millions of websites.
+Here is a quick list of things that I implement on WordPress websites to help minimize some risk.
+
+## Duo
+
+The [Duo Plugin for WordPress](https://duo.com/docs/wordpress) offers a paid two-factor authenication to help tighten the admin backend.
+
+## Disable XML-RPC
+
+#### What Is Xmlrpc.php?
+
+Simply put, the xmlrpc is a mechanism that allows data to be communicated with other systems. It has been around since the begenning and has been frequently targeted by bots and hackers. Because of this most 3rd party plugins have migrated away from it and no longer use it. However since its still present, it opens the risk of having malicious bots still trying to do harm to WordPress sites. So for extra security, there is no point in running it unless someoen has a bery specific use case for it.
+
+#### Add Filter
+
+The first and quick way to "disable" xmlrpc is to add a WordPress filter that will block the requests on the WordPress side of things.
+
+Add the code to the functions file for your theme or plugin.
+
+```php
+add_filter('xmlrpc_enabled', '__return_false');
+```
+
+#### .htaccess
+
+I've gone the extra mile to completely block the file via .htaccess.
+
+Paste the following into your .htaccess file to further restrict it from ever getting a public call.
+
+The reason for adding the rule to .htaccess inside of just deleting the file? I've had updates restore this file before. So this code makes sure it never gets called.
+
+```cpp
+# Block WordPress xmlrpc.php requests
+<Files xmlrpc.php>
+order deny,allow
+deny from all
+</Files>
+```
+
+## nginx directives
+
+These nginx directives ensure no one can download "backup" zip or rar files that I may generate before making modifications directly through FTP.
+
+```sh
+location ~* ^/wp-content/(themes|plugins)/.*.(zip|rar)$ {
+	deny all;
+}
+```
+
+## References
+
+Some random Google Searches for addtional information on WordPress XMLRPC.
+
+- https://computingforgeeks.com/how-to-disable-xmlrpc-php-access-in-wordpress/
+- https://secure.wphackedhelp.com/blog/wordpress-disable-xmlrpc/
+- https://www.wpbeginner.com/plugins/how-to-disable-xml-rpc-in-wordpress/
+- https://blogvault.net/wordpress-disable-xmlrpc/

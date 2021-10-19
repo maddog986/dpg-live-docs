@@ -1,0 +1,31 @@
+---
+title: Plugins
+section: TailwindCSS
+slug: /tailwindcss/plugins/
+---
+
+# TailwindCSS Plugins
+
+Various plugins for TailwindCSS.
+
+## Min-Width-Screen
+
+This plugin adds breakpoints to min-w-screen-*
+
+```js
+plugin(function ({ theme, addComponents }) {
+  addComponents(Object.entries(theme('screens', {})).map(([name, value]) => ({ [`.min-w-screen-${name}`]: { minWidth: value } })))
+})
+```
+
+## Add All Colors to Fill
+
+By default colors are not added to "Fill". I wanted to be able to specify "fill-gray-100" to an SVG icon.
+
+```js
+module.exports = {
+  theme: {
+    fill: theme => (theme('colors', {}))
+  }
+}
+```

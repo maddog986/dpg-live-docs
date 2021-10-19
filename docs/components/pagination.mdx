@@ -1,0 +1,163 @@
+---
+title: Pagination
+---
+
+# Pagination Component
+
+A component to provide a pagination navigation menu.
+
+## Features
+
+- Tailwindcss
+- Shows first and last page number.
+- Arrows for back and forward
+- Can be configured to show more page numbers.
+
+Last Update Oct 15, 2021
+
+```jsx
+<Pagination
+    // current pag enumber
+    pageNum={1}
+
+    // how many pages
+    totalPages={10}
+
+    // how many numbers to show
+    pageNeighbours={1}
+
+    // optional class properties
+    className=""
+
+    // function to call to handle page changes
+    handlePageChange={(e) => false}
+/>
+```
+
+### Live Code
+
+```jsx live noInline
+const range = (from, to, step = 1) => {
+    let i = from;
+    const range = [];
+
+    while (i <= to) {
+        range.push(i);
+        i += step;
+    }
+
+    return range;
+};
+
+const fetchPageNumbers = (totalPages, currentPage, pageNeighbours = 2) => {
+    const totalNumbers = pageNeighbours * 2 + 3;
+    const totalBlocks = totalNumbers + 2;
+
+    if (totalPages > totalBlocks) {
+        let pages = [];
+
+        const leftBound = currentPage - pageNeighbours;
+        const rightBound = currentPage + pageNeighbours;
+        const beforeLastPage = totalPages - 1;
+
+        const startPage = leftBound > 2 ? leftBound : 2;
+        const endPage = rightBound < beforeLastPage ? rightBound : beforeLastPage;
+
+        pages = range(startPage, endPage);
+
+        const pagesCount = pages.length;
+        const singleSpillOffset = totalNumbers - pagesCount - 1;
+
+        const leftSpill = startPage > 2;
+        const rightSpill = endPage < beforeLastPage;
+
+        const leftSpillPage = "LEFT";
+        const rightSpillPage = "RIGHT";
+
+        if (leftSpill && !rightSpill) {
+            const extraPages = range(startPage - singleSpillOffset, startPage - 1);
+            pages = [leftSpillPage, ...extraPages, ...pages];
+        } else if (!leftSpill && rightSpill) {
+            const extraPages = range(endPage + 1, endPage + singleSpillOffset);
+            pages = [...pages, ...extraPages, rightSpillPage];
+        } else if (leftSpill && rightSpill) {
+            pages = [leftSpillPage, ...pages, rightSpillPage];
+        }
+
+        return [1, ...pages, totalPages];
+    }
+
+    return range(1, totalPages);
+}
+
+const Pagination = ({ className = "", pageNum = 1, totalPages = 1, pageNeighbours = 2, handlePageChange = (pageNum) => console.log('pageNum:', pageNum) }) => {
+    const pages = fetchPageNumbers(totalPages, pageNum, pageNeighbours);
+
+    const doPageChange = (page) => {
+        return (e) => {
+            e.preventDefault();
+            handlePageChange(page);
+        }
+    }
+
+    return <div className={"inline-flex rounded overflow-hidden bg-gray-50 border border-gray-300 text-sm " + className}>
+        <div className="w-40 text-gray-400 h-10 flex items-center justify-center">
+            Page {pageNum} of {totalPages}
+        </div>
+        <div className="flex uppercase font-semibold">
+            {pages.map((item, idx) => {
+                if (item === "LEFT") {
+                    return <button key={idx} onClick={doPageChange(pageNum - 1)} className="hover:bg-gray-200 self-center w-10 h-10 flex items-center justify-center border-l border-gray-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                        </svg>
+                    </button>
+                } else if (item === "RIGHT") {
+                    return <button key={idx} onClick={doPageChange(pageNum + 1)} className="hover:bg-gray-200 self-center w-10 h-10 flex items-center justify-center border-l border-gray-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                    </button>
+                } else {
+                    return <button key={idx} onClick={doPageChange(item)} className={(pageNum === item ? "bg-gray-200 hover:cursor-default text-gray-500" : "hover:bg-gray-200") + " border-gray-300 border-l w-10 h-10 flex items-center justify-center"}>{item}</button>
+                }
+            })}
+        </div>
+    </div>
+}
+
+// Example code
+const ExampleClickable = () => {
+    const [pageNum, setPageNum] = useState(1);
+
+    const handlePageChange = (pageNum) => {
+        setPageNum(pageNum);
+    }
+
+    return (
+        <Pagination
+            pageNum={pageNum}
+            pageNeighbours={1}
+            totalPages={20}
+            handlePageChange={handlePageChange}
+        />
+    )
+}
+
+render(
+    <>
+        <p className="text-gray-500 mb-2">Simple Demo</p>
+
+        <Pagination
+            pageNum={1}
+            pageNeighbours={1}
+            totalPages={10} />
+
+        <div className="p-1"></div>
+
+        <p className="text-gray-500 mb-2">Clickable Demo</p>
+
+        <ExampleClickable />
+    </>
+)
+```

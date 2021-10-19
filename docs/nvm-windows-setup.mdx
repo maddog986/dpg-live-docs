@@ -1,0 +1,51 @@
+---
+title: NVM Windows Setup
+section: Guides
+slug: /nvm-windows-setup/
+---
+
+# Install NVM On Windows
+
+When I began developing Node.js I started off following the “readme” and documentations that simply stated to install Node.js for Windows. However, over time I have found out the hard way many different packages and projects require very specific versions of Node.js.
+
+NVM for Windows helps to solve this issue of needing to change versions of Node by allowing you to “hot load” different versions.
+
+## Pre-Install Notice
+
+Uninstall Node.js completely before setting up NVM.
+
+If you already have Node.js installed, you will have to completely uninstall it. I have also found first hand that after uninstalling NPM it leaves folders behind that have to be manually deleted. I skipped this at first, and could never get NVM working until I deleted all 3 folders:
+
+- %appdata%\npm
+- %appdata%\npm-cache
+- %programfiles%\nodejs
+
+NVM uses generated symlink to swap versions. So if you do not remove the folders prior to install, it wont work.
+
+## Install NVM
+
+Install the latest version of [NVM for Windows](https://github.com/coreybutler/nvm-windows) from the official releases page.
+*Note: I first tried the Chocolatey installer and could not get it working correctly.*
+
+## Install Node using NVM
+
+Once NVM is installed you will need to install at least one version of Node. Running the command “nvm list available” will give you a complete list of all Node versions you can install.
+*You may have to run an elevated permissions window for commands to work.*
+
+```bash
+nvm list available
+```
+
+Choose a Node.js version to install, or choose latest, and run the command to install it:
+
+```bash
+nvm install latest
+```
+
+## Check what version of Node is running
+
+Simply run the command to see what version of Node is currently selected.
+
+```bash
+node -v
+```

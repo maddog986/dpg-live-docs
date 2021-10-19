@@ -1,0 +1,39 @@
+---
+title: withScrollPos
+---
+
+# With Scroll Position
+
+A [React HOC Component](https://reactjs.org/docs/higher-order-components.html) to provide scroll position of the window.
+
+## Code: withScrollPos
+
+```jsx
+const withScrollPos = (Component, options = { oneTime: true }) => (props) => {
+    const [scrollPos, setScroll] = useState(0)
+
+    useEffect(() => {
+        const scrollListen = () => {
+            setScroll(document.body.scrollTop || document.documentElement.scrollTop)
+
+            if (options.oneTime) {
+                window.removeEventListener('scroll', scrollListen)
+            }
+        }
+
+        window.addEventListener('scroll', scrollListen)
+
+        return () => {
+            window.removeEventListener('scroll', scrollListen)
+        }
+    }, [])
+
+    return (
+        <Component scrollPos={scrollPos} {...props} />
+    )
+}
+
+const Test = ({ scrollPos }) => <div>Scroll Pos: {scroll}</div>
+
+export default withScrollPos(Test)
+```

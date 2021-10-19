@@ -1,0 +1,30 @@
+---
+title: AppProvider
+---
+
+# AppProvider
+
+A simple "AppProvider" [React context provider](https://reactjs.org/docs/context.html).
+
+```jsx
+// custom reducer
+export const appReducer = (state, newState) => ({ ...state, ...newState })
+
+// global state provider
+export const AppProvider = ({ children, initialState = {} }) => {
+  // holds the Provider state
+  const [state, _dispatch] = useReducer(appReducer, initialState)
+
+  // setting up dispatch to support promises
+  const dispatch = (action) =>
+    Promise.resolve(action)
+      .then((res) => (typeof res === "object") ? _dispatch(res) : res)
+      .catch((error) => _dispatch({ error }))
+
+  // finally app is ready, display the rest
+  return <ClientContext.Provider value={[state, dispatch]} children={children} />
+}
+
+// Function to return the current Context values
+export const useAppProvider = () => useContext(ClientContext)
+```

@@ -1,0 +1,76 @@
+---
+title: prism-react-renderer
+section: Other
+slug: /prism-react-renderer/
+---
+
+# prism-react-renderer
+
+A [code highlighter component](https://github.com/FormidableLabs/prism-react-renderer) for React.
+
+This website using prism-react-renderer code highliting. While the component has many other themes to choose from, I wanted a [Nord Theme](https://www.nordtheme.com/) impsired color combination that closer matches this website.
+
+## Nord Theme
+
+Code and preview of this style:
+
+Last Update: Oct 15, 2021.
+
+```js
+// nord based color theme
+const nordTheme = {
+    plain: {
+        color: '#ECEFF4',
+        backgroundColor: '#2E3440',
+        lineHeight: 1.35,
+        width: 'fit-content',
+        minWidth: '100%',
+        whiteSpace: 'pre',
+        fontFamily: 'Consolas, "Courier New", monospace',
+        letterSpacing: '-0.05em',
+    },
+    styles: [{
+        types: ['prolog', 'comment', 'doctype', 'cdata'],
+        style: { color: '#636f88' }
+    }, {
+        types: ['tag', 'class-name'],
+        style: { color: '#8FBCBB' }
+    }, {
+        types: ['property', 'parameter', 'spread', 'number', 'constant', 'symbol', 'atrule', 'attr-value', 'keyword'],
+        style: { color: '#81A1C1' }
+    }, {
+        types: ['attr-value'],
+        style: { color: '#E5E9F0' }
+    }, {
+        types: ['attr-name', 'string', 'char', 'builtin', 'insterted'],
+        style: { color: '#A3BE8C' }
+    }, {
+        types: ['entity', 'deleted', 'url', 'string', 'variable', 'language-css'],
+        style: { color: '#5E81AC' }
+    }, {
+        types: ['function', 'boolean', 'important', 'bold', 'regex', 'important'],
+        style: { color: "#EBCB8B" }
+    }, {
+        types: ['punctuation', 'symbol'],
+        style: { color: '#D08770', opacity: '0.6' }
+    }, {
+        types: ['operator'],
+        style: { color: '#D08770' }
+    }, {
+        types: ['italic'],
+        style: { fontStyle: 'italic' }
+    }]
+}
+```
+
+Add the theme object to your Highlight tag.
+
+```jsx
+<Highlight theme={nordTheme} ... />
+```
+
+## More Information
+
+You can read the [official theme documenation](https://github.com/FormidableLabs/prism-react-renderer#theming) if your not sure how to apply this code.
+
+You can also see the [Official themes](https://github.com/FormidableLabs/prism-react-renderer/tree/master/src/themes).

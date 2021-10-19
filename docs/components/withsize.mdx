@@ -1,0 +1,60 @@
+---
+title: withSize
+---
+
+# With Size
+
+A [React HOC Component](https://reactjs.org/docs/higher-order-components.html) to provide size of an element.
+
+```jsx
+const withSize = (Component) => (props) => {
+  const ref = useRef();
+
+  const [size, setSize] = useState({
+    width: -1,
+    height: -1
+  });
+
+  useEffect(() => {
+    if (!ref || !ref.current) return;
+    ref.current.style.height = "";
+    setSize(ref.current.getBoundingClientRect());
+  }, [ref]);
+
+  return <Component {...props} size={size} forwardedRef={ref} />;
+};
+```
+
+## Live Code: withSize
+
+```jsx live noInline
+const withSize = (Component) => (props) => {
+  const ref = useRef();
+
+  const [size, setSize] = useState({
+    width: -1,
+    height: -1
+  });
+
+  useEffect(() => {
+    if (!ref || !ref.current) return;
+    ref.current.style.height = "";
+    setSize(ref.current.getBoundingClientRect());
+  }, [ref]);
+
+  return <Component {...props} size={size} forwardedRef={ref} />;
+};
+
+const Tester = withSize(({ forwardedRef, size, ...props }) => {
+  return (
+    <div className="border-2 border-dashed border-gray-400 p-2 text-center w-48" ref={forwardedRef}>
+      <p>Width: {size.width}</p>
+      <p>Height: {size.height}</p>
+    </div>
+  )
+});
+
+render(
+    <Tester />
+)
+```
