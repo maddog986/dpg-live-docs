@@ -131,7 +131,15 @@ const buildXML = xmlObj => {
 
     return xml
 }
+```
 
+### How to run
+
+An example of how this function can be called.
+
+#### InformResponse
+
+```jsx
 console.log(buildXML({
     xml: {
         $: {
@@ -152,7 +160,33 @@ console.log(buildXML({
             'cwmp:InformResponse': {
                 MaxEnvelopes: "1"
             },
+        }
+    }
+}))
+```
 
+#### SetParameterValues
+
+This example tells a device to SetParameterValues.
+It was tested with a SmartRG 905AC router. This tells the device to check in every 90 seconds, Enables Remote Access, and changes the default admin login password.
+
+```jsx
+console.log(buildXML({
+    xml: {
+        $: {
+            version: "1.0",
+            encoding: "UTF-8"
+        }
+    },
+    Envelope: {
+        $: {
+            "xmlns:xsd": "http://www.w3.org/2001/XMLSchema",
+            "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+            "xmlns:soap": "http://schemas.xmlsoap.org/soap/envelope/",
+            "xmlns:soapenc": "http://schemas.xmlsoap.org/soap/encoding/",
+            "xmlns:cwmp": "urn:dslforum-org:cwmp-1-0"
+        },
+        body: {
 			// set parameter values
             "cwmp:SetParameterValues": {
                 ParameterList: {
@@ -172,6 +206,8 @@ console.log(buildXML({
     }
 }))
 ```
+
+#### Example
 
 Example of what this could will output:
 
