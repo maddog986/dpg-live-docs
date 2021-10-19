@@ -6,3 +6,10 @@ html,
 body {
     font-family: Rubik;
 }
+
+@screen md {
+    .menu {
+        height: calc(100vh - 56px);
+        top: 56px;
+    }
+}

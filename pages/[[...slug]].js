@@ -76,25 +76,31 @@ export default function DocPage({ content, menu }) {
       </Head>
 
       <div className="flex flex-col min-h-screen bg-white">
+
         <div className="sticky top-0 left-0 right-0 z-30 flex bg-white border-b shadow-sm h-14">
           <div className="container flex items-center justify-between w-full px-8 mx-auto">
-            <div class="flex items-center gap-1">
+            <div className="flex items-center gap-1">
               <svg className="w-6 h-6 transition-all fill-night-100" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 95.87 83">
                 <path d="M54.363 0H1v12h54.012c16.582.027 29.98 13.219 30.011 29.5-.03 16.277-13.43 29.477-30.011 29.5H13V35h39.809c3.308.016 5.992 2.7 5.992 6s-2.684 5.988-5.992 6H36v-5H24v18.012s25.227 0 27.848-.008c9.972 0 17.996-8.074 18.004-18.004-.008-9.91-8.016-17.965-17.965-18L0 24.008 1 83h53.363c22.93-.012 41.504-18.598 41.512-41.508C95.867 18.59 77.293 0 54.363 0m-2.566 23.734c.008 0 .016 0 .02.004.304-.004.128-.004-.02-.004m0 0h-.024.024"></path>
               </svg>
 
-              <span class="text-xl text-night-300 font-medium">DPG Live Docs</span>
+              <span className="text-xl font-medium text-night-300">DPG Live Docs</span>
             </div>
 
-            {/* <nav>
-              <a href="#" className="font-medium underline">Docs {path}</a>
-            </nav> */}
+            <nav className="flex md:hidden">
+              <label htmlFor="menu" className="flex">
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </label>
+            </nav>
           </div>
         </div>
 
-        <div className="container grid mx-auto gap-14 grid-cols-site-sm xl:grid-cols-site-lg">
-          <div className="sticky flex flex-col gap-8 py-12 overflow-y-scroll" style={{ height: 'calc(100vh - 56px)', top: 56 }}>
+        <div className="grid mx-auto md:container md:gap-14 md:grid-cols-site-sm xl:grid-cols-site-lg">
+          <input type="checkbox" id="menu" name="menu" className="hidden peer" />
 
+          <div className="flex-col hidden gap-8 px-4 py-4 bg-gray-100 menu md:overflow-y-scroll md:sticky md:py-12 peer-checked:flex md:flex md:bg-white">
             {Object.entries(menu).map(([key, items]) => (
               <div key={key}>
                 <h4 className="font-medium text-gray-600 uppercase">{key}</h4>
@@ -108,7 +114,7 @@ export default function DocPage({ content, menu }) {
             ))}
           </div>
 
-          <article className="py-12">
+          <article className="px-4 py-4 md:py-12">
             <div id="article" className="prose max-w-none">
               <MDXProvider components={components}>
                 <MDXRemote {...content} />
