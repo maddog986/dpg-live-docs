@@ -85,7 +85,7 @@ module.exports = {
             a: {
               color: '#4C566A',
               textDecoration: null,
-              lineHeight: null,
+              lineHeight: 1.1,
               letterSpacing: '-.5px',
 
               '&:hover': {
@@ -97,20 +97,20 @@ module.exports = {
               color: '#3B4252',
               marginBottom: '1.25rem',
               marginTop: null,
-              lineHeight: null
+              lineHeight: 1.1
             },
             h2: {
               color: '#3B4252',
               marginBottom: '1.25rem',
               marginTop: null,
-              lineHeight: null
+              lineHeight: 1.1
             },
             h3: {
               color: '#4C566A',
               marginBottom: '.5rem',
               fontWeight: 500,
               marginTop: null,
-              lineHeight: null
+              lineHeight: 1.1
             },
             h4: {
               borderBottom: '2px dashed #D8DEE9',
@@ -119,13 +119,13 @@ module.exports = {
               fontSize: "1.25em",
               fontWeight: 500,
               marginTop: null,
-              lineHeight: null
+              lineHeight: 1.1
             },
             p: {
               color: '#4C566A',
               marginTop: 0,
               marginBottom: '1.25rem',
-              lineHeight: null
+              lineHeight: 1.5
             },
             "p + div": {
               marginBottom: '1.25rem',
