@@ -1,0 +1,208 @@
+---
+title: TR-069
+section: Projects
+---
+
+# TR-069
+
+[TR-069](https://en.wikipedia.org/wiki/TR-069) is, quickly put, a protocol for devices to communicate with a management server.
+
+## Resources
+
+Some resources I have used while trying to reverse engineer something to work with Node.
+
+- https://github.com/jerrypnz/clj.tr069/tree/master/resources
+
+## BuildXML
+
+This code builds a valid XML response using objects/arrays.
+However, I never put this into production as the job requirements changed. So putting this into any production should be used with caution.
+
+Last Updated: 10-19-2021
+
+```jsx
+let soapEnv = "soap-env"
+let soapEnc = "soap-enc"
+let soapCwmp = "cwmp"
+
+// version: 1.0.1
+const buildXML = xmlObj => {
+    let xml = ""
+
+    for (var key in xmlObj) {
+        // dont continue of the key is an arugment
+        if (key === "$") continue
+
+        let value = xmlObj[key]
+
+        if (typeof value === 'undefined') return `<${key}></${key}>`
+
+        if (Array.isArray(value)) {
+            for (var i in value) {
+                if (typeof value[i] === "object") {
+                    xml += `<${key}>${buildXML(value[i])}</${key}>`
+                } else {
+                    xml += `<${key}>${value[i]}</${key}>`
+                }
+            }
+
+            continue
+        }
+
+        // auto figure out the soap-enc value from the xml arguments
+        if (key === "Envelope" && value.hasOwnProperty("$")) {
+            for (var k in value["$"]) {
+                if (String(value["$"][k]).includes("envelope")) {
+                    soapEnv = k.slice(k.indexOf(":") + 1)
+                }
+
+                if (String(value["$"][k]).includes("encoding")) {
+                    soapEnc = k.slice(k.indexOf(":") + 1)
+                }
+
+                if (String(value["$"][k]).includes("cwmp")) {
+                    soapCwmp = k.slice(k.indexOf(":") + 1)
+                }
+            }
+
+            key = soapEnv + ":" + key
+        }
+
+        let values = Object.values(value)
+        let keys = Object.keys(value)
+
+        if ([`Body`, `Header`].includes(key)) {
+            key = soapEnv + ":" + key
+
+            const newValue = {}
+
+            for (var n in value) {
+                newValue[`${soapCwmp}:${n}`] = value[n]
+            }
+
+            value = newValue
+        }
+
+        // main xml tag
+        if (key === "xml") {
+            xml +=
+                `<?${key} ` +
+                Object.keys(value["$"])
+                .filter(k => value["$"][k] !== "_")
+                .map(k => `${k}="${value["$"][k]}"`)
+                .join(" ") +
+                "?>"
+
+            continue
+        }
+        // tag with arguments
+        else if (value.hasOwnProperty("$")) {
+            xml +=
+                `<${key} ` +
+                Object.keys(value["$"])
+                .filter(k => value["$"][k] !== "_")
+                .map(k => `${k}="${value["$"][k]}"`)
+                .join(" ") +
+                ">"
+
+            if (value.hasOwnProperty("_")) {
+                value = value["_"]
+            }
+        } else if (keys.length === 1 && values.length && Array.isArray(values[0])) {
+            if (["string"].includes(keys[0])) {
+                xml += `<${key} ${soapEnc}:arrayType="xsd:${keys[0]}[${values[0].length
+          }]">`
+            } else {
+                xml += `<${key} ${soapEnc}:arrayType="cwmp:${keys[0]}[${values[0].length
+          }]">`
+            }
+        } else {
+            xml += `<${key}>`
+        }
+
+        if (typeof value === "object") {
+            xml += buildXML(value)
+        } else {
+            xml += value
+        }
+
+        xml += `</${key}>`
+    }
+
+    return xml
+}
+
+console.log(buildXML({
+    xml: {
+        $: {
+            version: "1.0",
+            encoding: "UTF-8"
+        }
+    },
+    Envelope: {
+        $: {
+            "xmlns:xsd": "http://www.w3.org/2001/XMLSchema",
+            "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+            "xmlns:soap": "http://schemas.xmlsoap.org/soap/envelope/",
+            "xmlns:soapenc": "http://schemas.xmlsoap.org/soap/encoding/",
+            "xmlns:cwmp": "urn:dslforum-org:cwmp-1-0"
+        },
+        body: {
+            // basic inform response
+            'cwmp:InformResponse': {
+                MaxEnvelopes: "1"
+            },
+
+			// set parameter values
+            "cwmp:SetParameterValues": {
+                ParameterList: {
+                    ParameterValueStruct: [{
+                        Name: "Device.ManagementServer.PeriodicInformInterval",
+                        Value: "60"
+                    }, {
+                        Name: "Device.UserInterface.RemoteAccess.Enable",
+                        Value: true
+                    }, {
+                        Name: "Device.Users.User.1.Password",
+                        Value: "some password"
+                    }]
+                }
+            }
+        }
+    }
+}))
+```
+
+Example of what this could will output:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<soap:Envelope
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+	xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+	xmlns:cwmp="urn:dslforum-org:cwmp-1-0">
+	<body>
+		<cwmp:InformResponse>
+			<MaxEnvelopes>1</MaxEnvelopes>
+		</cwmp:InformResponse>
+		<cwmp:SetParameterValues>
+			<ParameterList soapenc:arrayType="cwmp:ParameterValueStruct[3]">
+				<ParameterValueStruct>
+					<Name>Device.ManagementServer.PeriodicInformInterval</Name>
+					<Value>60</Value>
+				</ParameterValueStruct>
+				<ParameterValueStruct>
+					<Name>Device.UserInterface.RemoteAccess.Enable</Name>
+					<Value>true</Value>
+				</ParameterValueStruct>
+				<ParameterValueStruct>
+					<Name>Device.Users.User.1.Password</Name>
+					<Value>supportME</Value>
+				</ParameterValueStruct>
+			</ParameterList>
+		</cwmp:SetParameterValues>
+	</body>
+</soap:Envelope>
+```
